@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fortnite Cosmetics</title>
+    <title>Fortnite</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navigation">
+        <a href="{{ url_for('welcome') }}" class="nav-item"> <img src="/static/images/home-icon.png"> </a>
+        <a href="{{ url_for('account') }}?currentTab=1" class="nav-item"> <img src="{{ pfp }}" style="width: 2rem; height: auto;"> </a>
+    </nav>
+
+    <h1 class="header">FORTNITE</h1>
+
+    <input type="hidden" name="currentTab" value="1">
+    <div  class="cosmetic-container">
+
+    <!-- <input type="text" placeholder="Search skins..." id="searchInput"> -->
+    <form action="/sortFortnite" method="POST">
+        <div class="search-container">
+            <input type="text" placeholder="Search Cosmetics" class="search-input" id="search" name="search">
+            <img src="/static/images/search-icon.png">
+        </div>
+
+        <div style="display: flex;">
+            <h1 style="color: var(--main-text); text-shadow: 0 8px 16px rgba(0,0,0,0.3); bottom: 0;">Cosmetics</h1>
+            <select id="type" name="type" class="filter-btn" style="background: var(--secondary-background); border: none; color: var(--main-text); font-size: small; font-weight: bold;">
+                <option value="">Type</option>
+                <option value="backpack">Back Bling</option>
+                <option value="outfit">Skin</option>
+                <option value="emote">Emote</option>
+                <option value="pickaxe">Pickaxe</option>
+                <option value="spray">Spray</option>
+                <option value="wrap">Wrap</option>
+                <option value="music">Music</option>
+                <option value="petcarrier">Pet Carrier</option>
+                <option value="pet">Pet</option>
+                <option value="loadingscreen">Loading Screen</option>
+                <option value="emoji">Emoticon</option>
+                <option value="contrail">Contrail</option>
+                <option value="shoe">Shoes</option>
+                <option value="glider">Glider</option>
+            </select>
+
+            <select id="rarity" name="rarity" class="filter-btn" style="background: var(--secondary-background); border: none; color: var(--main-text); font-size: small; font-weight: bold;">
+                <option value="">Rarity</option>
+                <option value="Epic">Epic</option>
+                <option value="Uncommon">Uncommon</option>
+                <option value="Rare">Rare</option>
+                <option value="Legendary">Legendary</option>
+            </select>
+
+            <div class="filter-btn">
+                <button class="button" style="background: var(--secondary-background); border: none; color: var(--main-text); font-size: small; font-weight: bold;">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <br><br><br>
+    <div class="fortnite-card-container">
+        {% for item in list %}
+            <div class="fortnite-card" onclick="openModal(this)">
+                <img 
+                    style="border-radius: 1rem"
+                    src="{{ item.images.smallIcon }}" 
+                    alt="{{ item.name }}" 
+                    width="128" 
+                    height="128"
+                    data-name="{{ item.name }}"
+                    data-description="{{ item.description }}"
+                    data-image="{{ item.images.icon }}"
+                    data-type="{{ item.type.displayValue }}"
+                    data-rarity="{{ item.rarity.backendValue.replace('EFortRarity::', '') }}"
+                    {% if item.series is defined %}
+                        data-series="{{ item.series.value }}"
+                    {% else %}
+                        data-series="N/A"
+                    {% endif %}
+                    {% if item.set is defined %}
+                        data-set="{{ item.set.text }}"
+                    {% else %}
+                        data-set="N/A"
+                    {% endif %}
+                    {% if item.introduction is defined %}
+                        data-introduction="{{ item.introduction.text }}"
+                    {% else %}
+                        data-introduction="N/A"
+                    {% endif %}
+                >
+                <p>{{ item.name }}</p>
+            </div>
+        {% endfor %}
+    </div>
+    </div>
+    <div id="myModal" style="display: none; position: fixed; top: 20%; left: 50%; transform: translate(-50%, -20%); min-width: 200px;" class="fortnite-info">        
+        <form id="addFavoriteForm">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0.5rem;">
+                <button type="button" class="back-btn" id="closeModal">
+                    <img src="/static/images/arrow-icon.png" alt="Back">
+                </button>
+                <button type="submit" class="add-btn">
+                    <img src="/static/images/add-icon.png">
+                </button>
+            </div>
+
+            <br><br><br>
+            <hr>
+            <br>
+
+            <input type="hidden" id="hiddenImage" name="image">
+            <input type="hidden" id="hiddenName" name="name">
+            <input type="hidden" id="hiddenDescription" name="description">
+            <input type="hidden" id="hiddenType" name="type">
+            <input type="hidden" id="hiddenRarity" name="rarity">
+            <input type="hidden" id="hiddenSeries" name="series">
+            <input type="hidden" id="hiddenSet" name="set">
+            <input type="hidden" id="hiddenIntroduction" name="introduction">
+            
+            <img class="modal-image" src="" alt="" style="max-width: 128px; max-height: auto; border-radius: 1rem;" id="imageDisplay">
+            <h2 style="font-weight: bold;" class="modal-title" id="nameDisplay"></h2>
+            <p class="modal-description" id="descriptionDisplay"></p>
+            <p class="modal-type" id="typeDisplay"></p>
+            <p class="modal-rarity" id="rarityDisplay"></p>
+            <p class="modal-series" id="seriesDisplay"></p>
+            <p class="modal-set" id="setDisplay"></p>
+            <p class="modal-introduction" id="introductionDisplay"></p>
+
+        </form>
+    </div>
+    <div class="pagination">
+        {% if has_prev %}
+        <a href="{% if request.endpoint == 'sortFortnite' %}
+             {{ url_for('sortFortnite', page=page - 1, type=type, rarity=rarity, search=search) }}
+         {% else %}
+             {{ url_for('fortnite', page=page - 1) }}
+         {% endif %}"
+        class="page-button">Previous</a>
+        {% endif %}
+        {% if has_next %}
+        <a href="{% if request.endpoint == 'sortFortnite' %}
+             {{ url_for('sortFortnite', page=page + 1, type=type, rarity=rarity, search=search) }}
+         {% else %}
+             {{ url_for('fortnite', page=page + 1) }}
+         {% endif %}"
+        class="page-button">Next</a> 
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='cosmetic.js') }}"></script>
+</body>
+</html>

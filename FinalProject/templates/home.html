@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<header class="title-container">
+  <h1 class="title">GameTrackr</h1>
+  <h2 class="welcome-message">Welcome back, {{ username }}!</h2>
+  <p> Select a platform to get started </p>
+
+</header>
+
+<body class="no-scrolling" style="overflow: hidden;">
+    <div class="image-split">
+        <a href="{{ url_for('steam') }}">
+          <img src="/static/images/steam.jpg" alt="Steam">
+        </a>
+        <a href="{{ url_for('fortnite') }}">
+          <img src="/static/images/fortnite.jpg" alt="Fortnite">
+        </a>
+    </div>
+</body>
+</html>

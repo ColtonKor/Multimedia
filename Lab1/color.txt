@@ -1,0 +1,7 @@
+214
+115
+116
+#D67374
+
+
+The first command we used was cd which changes the directory/file. We then used mkdir which adds a new directory in the current one. I then used New-Item to add a new file named test.cst205. I then used mv to move the file into the same directory but I changed the name so it is now hello.cst205. cat was used to determine the contents of the file. I then put this command "0..2 | % { Get-Random -min 0 -max 255} > color.txt" which fills lines 1-3 of color.txt so it has 3 numbers between 0 and 255 which was used to determine a color. I then used the notepad command to open the file into the notepad app so I could alter it.
