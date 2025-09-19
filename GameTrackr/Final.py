@@ -30,7 +30,7 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'MultimediaFinalProject12@gmail.com'  # Use environment variables in production
 app.config['MAIL_PASSWORD'] = 'halz raws xxjf wxmb'
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres.bkvgncwmwqudmgkhngiu:ColtonDatabasePassword1@aws-0-us-east-1.pooler.supabase.com:6543/postgres"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres.odenjdmtqbbvhoawwrrr:ColtonDatabasePassword1@aws-1-us-west-1.pooler.supabase.com:6543/postgres"
 db.init_app(app)
 
 
@@ -219,7 +219,7 @@ def favoriteCosmetic():
     series = request.form['series']
     set = request.form['set']
 
-    new_favorite = Favorite(
+    new_favorite = Skin(
         user_id=session['user']['id'],
         skinname=name,
         description=description,
@@ -240,7 +240,7 @@ def favoriteCosmetic():
 @app.route('/removeFavorite', methods=['POST'])
 def deleteCosmetic():
     id = request.form['id']
-    favorite = Favorite.query.filter_by(skin_id=id).first()
+    favorite = Skin.query.filter_by(skin_id=id).first()
 
     if favorite:
         db.session.delete(favorite)
@@ -272,7 +272,7 @@ def account():
     is_fortnite = (current_tab == '1')
 
     user = session.get('user')
-    favoriteCosmetics = Favorite.query.filter_by(user_id=user.get('id')).all()
+    favoriteCosmetics = Skin.query.filter_by(user_id=user.get('id')).all()
     favoriteGames = Free.query.filter_by(user_id=user.get('id')).all()
     
     return render_template('account.html', user=user, favoriteCosmetics=favoriteCosmetics, favoriteGames=favoriteGames, is_fortnite=is_fortnite)
@@ -283,7 +283,7 @@ def emailAvailability():
     email_body = f""
 
     user = session.get('user')
-    favoriteCosmetics = Favorite.query.filter_by(user_id=user.get('id')).all()
+    favoriteCosmetics = Skin.query.filter_by(user_id=user.get('id')).all()
     currentShop = fetch_fortnite_shop()
     notified_items = set()
 
@@ -377,7 +377,7 @@ def signup():
     return render_template('login.html')
 
 
-#Thes 4 functions below are just here to connect the data to the database, each function is a different table
+#These 4 functions below are just here to connect the data to the database, each function is a different table
 class User(db.Model):
     __tablename__ = 'user'
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -387,13 +387,12 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     profilepicture = db.Column(db.String(255))
     email = db.Column(db.String(120), unique=True, nullable=False)
-    favorites = db.relationship('Favorite', backref='user', cascade='all, delete', passive_deletes=True)
-    steams = db.relationship('Steam', backref='user', cascade='all, delete', passive_deletes=True)
+    favorites = db.relationship('Skin', backref='user', cascade='all, delete', passive_deletes=True)
     frees = db.relationship('Free', backref='user', cascade='all, delete', passive_deletes=True)
 
 
-class Favorite(db.Model):
-    __tablename__ = 'favorite'
+class Skin(db.Model):
+    __tablename__ = 'skin'
     skin_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id', ondelete='CASCADE'), nullable=False)
     skinname = db.Column(db.String(100), nullable=False)
@@ -404,17 +403,6 @@ class Favorite(db.Model):
     type = db.Column(db.String(255))
     image = db.Column(db.String(120), unique=True, nullable=False)
     introduced = db.Column(db.String(120), nullable=False)
-
-class Steam(db.Model):
-    __tablename__ = 'steam'
-    game_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id', ondelete='CASCADE'), nullable=False)
-    image = db.Column(db.String(120), unique=True, nullable=False)
-    gamename = db.Column(db.String(100), nullable=False)
-    saleprice = db.Column(db.String(100), nullable=False)
-    regularprice = db.Column(db.String(80), nullable=False)
-    deal_id = db.Column(db.String(255), nullable=False)
-    steam_id = db.Column(db.String(255), nullable=False)
 
 class Free(db.Model):
     __tablename__ = 'free'
